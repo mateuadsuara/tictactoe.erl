@@ -1,0 +1,1 @@
+-record(board, {marks, player, finished, winner}).
