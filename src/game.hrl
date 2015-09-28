@@ -1,1 +1,1 @@
--record(game, {board, player, finished, winner}).
+-record(game, {board, possible_moves, current_player, is_finished, winner}).
