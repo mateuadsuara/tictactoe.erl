@@ -1,48 +1,42 @@
 -module(board_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-board_with_no_moves_test() ->
-  #{1:=empty, 2:=empty, 3:=empty,
-    4:=empty, 5:=empty, 6:=empty,
-    7:=empty, 8:=empty, 9:=empty} = board:get_board_with_moves([]).
+-import(board, [new/0, as_list/1, empty_spaces/1, lines/1, with_moves/2]).
 
-board_with_first_mark_in_first_space_test() ->
-  #{1:=x,     2:=empty, 3:=empty,
-    4:=empty, 5:=empty, 6:=empty,
-    7:=empty, 8:=empty, 9:=empty} = board:get_board_with_moves([1]).
 
-board_with_second_mark_in_second_space_test() ->
-  #{1:=x,     2:=o,     3:=empty,
-    4:=empty, 5:=empty, 6:=empty,
-    7:=empty, 8:=empty, 9:=empty} = board:get_board_with_moves([1, 2]).
+a_new_board_as_list_test() ->
+  [empty, empty, empty,
+   empty, empty, empty,
+   empty, empty, empty] = as_list(new()).
 
-board_with_third_mark_in_third_space_test() ->
-  #{1:=x,     2:=o,     3:=x,
-    4:=empty, 5:=empty, 6:=empty,
-    7:=empty, 8:=empty, 9:=empty} = board:get_board_with_moves([1, 2, 3]).
+a_board_with_one_move_as_list_test() ->
+  BoardWithOneMove = with_moves([{1, x}], new()),
+  [x,     empty, empty,
+   empty, empty, empty,
+   empty, empty, empty] = as_list(BoardWithOneMove).
 
-display_board_test() ->
-  Board = #{1=>x,     2=>o,     3=>x,
-            4=>empty, 5=>empty, 6=>empty,
-            7=>empty, 8=>empty, 9=>empty},
+a_board_with_a_line_as_list_test() ->
+  BoardWithOneLine = with_moves([{1, x}, {2, o}, {3, x}], new()),
   [x,     o,     x,
    empty, empty, empty,
-   empty, empty, empty] = board:display_board(Board).
+   empty, empty, empty] = as_list(BoardWithOneLine).
 
-all_remaining_moves_test() ->
-  [1, 2, 3, 4, 5, 6, 7, 8, 9] = board:get_remaining_moves([]).
 
-some_remaining_moves_test() ->
-  [6, 7, 8, 9] = board:get_remaining_moves([1, 2, 3, 4, 5]).
+a_new_board_has_all_the_empty_spaces_test() ->
+  [1, 2, 3, 4, 5, 6, 7, 8, 9] = empty_spaces(new()).
 
-no_remaining_moves_test() ->
-  [] = board:get_remaining_moves([1, 2, 3, 4, 5, 6, 7, 8, 9]).
+removes_the_move_from_the_empty_spaces_test() ->
+  BoardWithOneMove = with_moves([{1, x}], new()),
+  [2, 3, 4, 5, 6, 7, 8, 9] = empty_spaces(BoardWithOneMove).
 
-mark_for_first_turn_test() ->
-  x = board:get_next_mark([]).
 
-mark_for_second_turn_test() ->
-  o = board:get_next_mark([2]).
+a_new_board_has_no_lines_test() ->
+  [] = lines(new()).
 
-mark_for_third_turn_test() ->
-  x = board:get_next_mark([2, 3]).
+an_incomplete_line_is_not_a_line_test() ->
+  BoardWithIncompleteLine = with_moves([{1, x}, {2, o}], new()),
+  [] = lines(BoardWithIncompleteLine).
+
+a_line_test() ->
+  BoardWithOneLine = with_moves([{1, x}, {2, o}, {3, x}], new()),
+  [[x, o, x]] = lines(BoardWithOneLine).

@@ -1,1 +1,0 @@
--record(game, {board, possible_moves, current_player, is_finished, winner}).

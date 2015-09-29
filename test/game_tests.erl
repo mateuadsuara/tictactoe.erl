@@ -1,48 +1,75 @@
 -module(game_tests).
 -include_lib("eunit/include/eunit.hrl").
 
--include("src/game.hrl").
+-import(game, [new/1, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
+
 
 initial_game_test() ->
-  #game{
-     board          = [empty, empty, empty,
-                       empty, empty, empty,
-                       empty, empty, empty],
-     possible_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9],
-     current_player = x,
-     is_finished    = false,
-     winner         = none
-  } = game:watch([]).
+  Game = new([]),
+  [empty, empty, empty,
+   empty, empty, empty,
+   empty, empty, empty] = board(Game),
+  [1, 2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game),
+  x     = next_player(Game),
+  false = is_finished(Game),
+  none  = winner(Game).
 
-game_after_first_move_test() ->
-  #game{
-     board          = [x,     empty, empty,
-                       empty, empty, empty,
-                       empty, empty, empty],
-     possible_moves = [2, 3, 4, 5, 6, 7, 8, 9],
-     current_player = o,
-     is_finished    = false,
-     winner         = none
-  } = game:watch([1]).
+game_with_first_move_test() ->
+  Game = new([1]),
+  [x,     empty, empty,
+   empty, empty, empty,
+   empty, empty, empty] = board(Game),
+  [2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game),
+  o     = next_player(Game),
+  false = is_finished(Game),
+  none  = winner(Game).
 
-game_full_test() ->
-  #game{
-     board          = [x, o, x,
-                       x, o, x,
-                       o, x, o],
-     possible_moves = [],
-     current_player = o,
-     is_finished    = true,
-     winner         = none
-  } = game:watch([1, 2, 3, 5, 4, 7, 6, 9, 8]).
+game_with_two_moves_test() ->
+  Game = new([1, 3]),
+  [x,     empty, o,
+   empty, empty, empty,
+   empty, empty, empty] = board(Game),
+  [2, 4, 5, 6, 7, 8, 9] = possible_moves(Game),
+  x     = next_player(Game),
+  false = is_finished(Game),
+  none  = winner(Game).
 
-game_winner_test() ->
-  #game{
-     board          = [x,     x,     x,
-                       o,     o,     empty,
-                       empty, empty, empty],
-     possible_moves = [6, 7, 8, 9],
-     current_player = o,
-     is_finished    = true,
-     winner         = x
-  } = game:watch([1, 4, 2, 5, 3]).
+game_with_three_moves_test() ->
+  Game = new([1, 3, 5]),
+  [x,     empty, o,
+   empty, x,     empty,
+   empty, empty, empty] = board(Game),
+  [2, 4, 6, 7, 8, 9] = possible_moves(Game),
+  o     = next_player(Game),
+  false = is_finished(Game),
+  none  = winner(Game).
+
+game_ended_in_draw_test() ->
+  Game = new([1, 2, 3, 5, 4, 7, 6, 9, 8]),
+  [x, o, x,
+   x, o, x,
+   o, x, o] = board(Game),
+  []   = possible_moves(Game),
+  o    = next_player(Game),
+  true = is_finished(Game),
+  none = winner(Game).
+
+x_won_in_first_line_test() ->
+  Game = new([1, 4, 2, 5, 3]),
+  [x,     x,     x,
+   o,     o,     empty,
+   empty, empty, empty] = board(Game),
+  [6, 7, 8, 9] = possible_moves(Game),
+  o    = next_player(Game),
+  true = is_finished(Game),
+  x    = winner(Game).
+
+o_won_in_first_line_test() ->
+  Game = new([6, 1, 7, 2, 8, 3]),
+  [o,     o,     o,
+   empty, empty, x,
+   x,     x,     empty] = board(Game),
+  [4, 5, 9] = possible_moves(Game),
+  x    = next_player(Game),
+  true = is_finished(Game),
+  o    = winner(Game).
