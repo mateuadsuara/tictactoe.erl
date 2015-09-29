@@ -5,4 +5,4 @@ empty_list_has_no_indexes_test() ->
   [] = list:with_indexes([]).
 
 adds_indexes_to_each_element_test() ->
-  [{0, a}, {1, b}, {2, c}] = list:with_indexes([a, b, c]).
+  [{1, a}, {2, b}, {3, c}] = list:with_indexes([a, b, c]).
