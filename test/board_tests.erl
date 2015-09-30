@@ -40,3 +40,16 @@ an_incomplete_line_is_not_a_line_test() ->
 a_line_test() ->
   BoardWithOneLine = with_moves([{1, x}, {2, o}, {3, x}], new()),
   [[x, o, x]] = lines(BoardWithOneLine).
+
+all_lines_test() ->
+  BoardWithOneLine = with_moves([{1, x}, {2, o}, {3, x},
+                                 {4, x}, {5, x}, {6, x},
+                                 {7, o}, {8, x}, {9, o}], new()),
+  [[x, o, x],
+   [x, x, x],
+   [o, x, o],
+   [x, x, o],
+   [o, x, x],
+   [x, x, o],
+   [x, x, o],
+   [x, x, o]] = lines(BoardWithOneLine).
