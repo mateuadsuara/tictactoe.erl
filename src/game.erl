@@ -1,13 +1,19 @@
 -module(game).
--export([new/1, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
+-export([new/0, new/1, make_move/2, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
 
 -record(game, {spaces_to_move, board}).
+
+new() ->
+  new([]).
 
 new(SpacesToMove) ->
   #game{
      spaces_to_move = SpacesToMove,
      board = board_with_moves(SpacesToMove)
   }.
+
+make_move(Space, Game) ->
+  new(lists:append(Game#game.spaces_to_move, [Space])).
 
 board(Game) ->
   board:as_list(Game#game.board).

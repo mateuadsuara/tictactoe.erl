@@ -1,8 +1,16 @@
 -module(game_tests).
 -include_lib("eunit/include/eunit.hrl").
 
--import(game, [new/1, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
+-import(game, [new/0, new/1, make_move/2, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
 
+
+can_be_iterated_making_moves_test() ->
+  Game1 = new(),
+  [1, 2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game1),
+  Game2 = make_move(1, Game1),
+  [2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game2),
+  Game3 = make_move(2, Game2),
+  [3, 4, 5, 6, 7, 8, 9] = possible_moves(Game3).
 
 initial_game_test() ->
   Game = new([]),
