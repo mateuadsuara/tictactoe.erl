@@ -31,8 +31,8 @@ is_finished(Game) ->
 
 winner(Game) ->
   case winner_lines(Game#game.board) of
-    []           -> none;
-    [[Winner|_]] -> Winner
+    []             -> none;
+    [[Winner|_]|_] -> Winner
   end.
 
 
