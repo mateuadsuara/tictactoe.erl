@@ -46,11 +46,7 @@ mark_at_turn({Turn, Space}) ->
   {Space, mark_for(Turn)}.
 
 add_turns_to(SpacesToMove) ->
-  list_with_indexes(SpacesToMove).
-
-list_with_indexes(List) ->
-  Indexes = lists:seq(1, length(List)),
-  lists:zip(Indexes, List).
+  list:with_indexes(SpacesToMove).
 
 mark_for(Turn) when Turn rem 2 /= 0 -> x;
 mark_for(_) -> o.
