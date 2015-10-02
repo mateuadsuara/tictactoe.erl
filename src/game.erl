@@ -6,14 +6,20 @@
 new() ->
   new([]).
 
-new(SpacesToMove) ->
+new(Moves) ->
   #game{
-     spaces_to_move = SpacesToMove,
-     board = board_with_moves(SpacesToMove)
+     spaces_to_move = Moves,
+     board = board_with_moves(Moves)
   }.
 
-make_move(Space, Game) ->
-  new(lists:append(Game#game.spaces_to_move, [Space])).
+make_move(Move, Game) ->
+  case is_possible_move(Move, Game) of
+    false ->
+      {error, impossible_move};
+    _ ->
+      Moves = lists:append(Game#game.spaces_to_move, [Move]),
+      {ok, new(Moves)}
+  end.
 
 board(Game) ->
   board:as_list(Game#game.board).
@@ -50,6 +56,9 @@ add_turns_to(SpacesToMove) ->
 
 mark_for(Turn) when Turn rem 2 /= 0 -> x;
 mark_for(_) -> o.
+
+is_possible_move(Move, Game) ->
+  lists:member(Move, board:empty_spaces(Game#game.board)).
 
 has_no_moves_left(Game) ->
   [] == possible_moves(Game).

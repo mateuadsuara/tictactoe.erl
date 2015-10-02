@@ -7,10 +7,20 @@
 can_be_iterated_making_moves_test() ->
   Game1 = new(),
   [1, 2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game1),
-  Game2 = make_move(1, Game1),
+  {ok, Game2} = make_move(1, Game1),
   [2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game2),
-  Game3 = make_move(2, Game2),
+  {ok, Game3} = make_move(2, Game2),
   [3, 4, 5, 6, 7, 8, 9] = possible_moves(Game3).
+
+making_an_impossible_move_returns_error_test() ->
+  Game = new([2, 3]),
+  [1, 4, 5, 6, 7, 8, 9] = possible_moves(Game),
+  {error, impossible_move} = make_move(0, Game),
+  {error, impossible_move} = make_move(10, Game),
+  {error, impossible_move} = make_move(2, Game),
+  {error, impossible_move} = make_move(3, Game),
+  {error, impossible_move} = make_move("a", Game),
+  {error, impossible_move} = make_move(not_a_move, Game).
 
 initial_game_test() ->
   Game = new([]),
