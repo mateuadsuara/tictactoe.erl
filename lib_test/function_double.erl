@@ -19,7 +19,7 @@ call(State, Arguments) ->
   end.
 
 arguments(State) ->
-  State ! {get, self()},
+  State ! {arguments, self()},
   receive
     Arguments -> Arguments
   end.
@@ -30,6 +30,6 @@ state(ReturnValues, ArgumentsReceived) ->
       [ReturnValue|Rest] = ReturnValues,
       From ! ReturnValue,
       state(Rest, ArgumentsReceived ++ [Arguments]);
-    {get, From} ->
+    {arguments, From} ->
       From ! ArgumentsReceived
   end.
