@@ -7,6 +7,11 @@ spies_the_io_messages_test() ->
    {io_reply,Ref,ok}] =
     test_io:spy(fun() -> ok = io:format("foo") end).
 
+spies_the_unknown_messages_test() ->
+  [message] =
+    test_io:spy(fun() -> erlang:group_leader() ! message end).
+
+
 returns_the_function_result_test() ->
   {result, _} = test_io:redirect("", fun() -> result end).
 
@@ -18,6 +23,20 @@ redirects_the_formatted_output_test() ->
           ok = io:format("FOO"),
           ok = io:format("~p~n", ["BAR"])
       end).
+
+reads_a_string_test() ->
+  test_io:redirect(
+    "foo",
+    fun() ->
+        {ok, ["foo"]} = io:fread("", "~s")
+    end).
+
+reads_a_string_after_some_lines_test() ->
+  test_io:redirect(
+    "\n\n\nfoo",
+    fun() ->
+        {ok, ["foo"]} = io:fread("", "~s")
+    end).
 
 reads_an_integer_test() ->
   test_io:redirect(

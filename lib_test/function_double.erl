@@ -12,6 +12,16 @@ new(Arity, ReturnValues) ->
   {Spy, GetArguments}.
 
 
+state(ReturnValues, ArgumentsReceived) ->
+  receive
+    {call, From, Arguments} ->
+      [ReturnValue|Rest] = ReturnValues,
+      From ! ReturnValue,
+      state(Rest, ArgumentsReceived ++ [Arguments]);
+    {arguments, From} ->
+      From ! ArgumentsReceived
+  end.
+
 call(State, Arguments) ->
   State ! {call, self(), Arguments},
   receive
@@ -22,14 +32,4 @@ arguments(State) ->
   State ! {arguments, self()},
   receive
     Arguments -> Arguments
-  end.
-
-state(ReturnValues, ArgumentsReceived) ->
-  receive
-    {call, From, Arguments} ->
-      [ReturnValue|Rest] = ReturnValues,
-      From ! ReturnValue,
-      state(Rest, ArgumentsReceived ++ [Arguments]);
-    {arguments, From} ->
-      From ! ArgumentsReceived
   end.

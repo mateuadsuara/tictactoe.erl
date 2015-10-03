@@ -37,6 +37,7 @@ status(Game) ->
    {false, NextPlayer, _} -> {ongoing, NextPlayer}
  end.
 
+
 next_player(Game) ->
   LastTurn = length(Game#game.spaces_to_move),
   NextTurn = LastTurn + 1,
@@ -50,7 +51,6 @@ winner(Game) ->
     []             -> none;
     [[Winner|_]|_] -> Winner
   end.
-
 
 board_with_moves(SpacesToMove) ->
   board:with_moves(add_marks_to(SpacesToMove), board:new()).

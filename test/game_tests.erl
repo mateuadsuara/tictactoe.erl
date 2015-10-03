@@ -8,8 +8,10 @@ can_be_iterated_making_moves_test() ->
   Game1 = new(),
   [1, 2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game1),
   {ok, Game2} = make_move(1, Game1),
+  [1] = moves(Game2),
   [2, 3, 4, 5, 6, 7, 8, 9] = possible_moves(Game2),
   {ok, Game3} = make_move(2, Game2),
+  [1, 2] = moves(Game3),
   [3, 4, 5, 6, 7, 8, 9] = possible_moves(Game3).
 
 making_an_impossible_move_returns_error_test() ->
