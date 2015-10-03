@@ -13,7 +13,7 @@ display_last_move(Moves) ->
   io:format("Moved to ~w.~n", [lists:last(Moves)]).
 
 display_board(Board) ->
-  io:format(text_ui:format(Board)).
+  io:format("~n~s~n", [text_ui:format(Board)]).
 
 display_status({ongoing, ActivePlayer}) ->
   io:format("~p is playing now...~n", [ActivePlayer]);
