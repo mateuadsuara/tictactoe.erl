@@ -1,5 +1,5 @@
 -module(game).
--export([new/0, new/1, make_move/2, board/1, possible_moves/1, next_player/1, is_finished/1, winner/1]).
+-export([new/0, new/1, make_move/2, board/1, possible_moves/1, status/1]).
 
 -record(game, {spaces_to_move, board}).
 
@@ -26,6 +26,13 @@ board(Game) ->
 
 possible_moves(Game) ->
   board:empty_spaces(Game#game.board).
+
+status(Game) ->
+ case {is_finished(Game), next_player(Game), winner(Game)} of
+   {true, _, none} -> {finished, draw};
+   {true, _, Winner} -> {finished, Winner};
+   {false, NextPlayer, _} -> {ongoing, NextPlayer}
+ end.
 
 next_player(Game) ->
   LastTurn = length(Game#game.spaces_to_move),

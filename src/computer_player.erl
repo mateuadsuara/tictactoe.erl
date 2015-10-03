@@ -26,10 +26,10 @@ score_move(Move, Game) ->
   negamax_score(6, make_move(Move, Game)).
 
 negamax_score(Depth, Game) ->
-  case {Depth, game:is_finished(Game), game:winner(Game)} of
-    {_, true,  none} -> 0;
-    {_, true,  _}    -> 1 * Depth;
-    {0, false, _}    -> 0;
+  case {Depth, game:status(Game)} of
+    {_, {finished, draw}} -> 0;
+    {_, {finished, _}}    -> 1 * Depth;
+    {0, {ongoing, _}}     -> 0;
     _ ->
       ScoreMove = fun(Move) ->
                       negamax_score(Depth -1, make_move(Move, Game))
