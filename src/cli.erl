@@ -3,9 +3,14 @@
 -export([update/1]).
 
 update(Game) ->
+  display_last_move(game:moves(Game)),
   display_board(game:board(Game)),
   display_status(game:status(Game)).
 
+
+display_last_move([]) -> ok;
+display_last_move(Moves) ->
+  io:format("Moved to ~w.~n", [lists:last(Moves)]).
 
 display_board(Board) ->
   io:format(text_ui:format(Board)).

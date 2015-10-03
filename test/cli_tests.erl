@@ -65,3 +65,14 @@ displays_a_draw_test() ->
   {finished, draw} = game:status(Game),
   {ok, Output} = test_io:redirect("", fun() -> update(Game) end),
   true = contains(Output, "It is a draw.\n").
+
+
+displays_the_first_move_test() ->
+  Game = game:new([1]),
+  {ok, Output} = test_io:redirect("", fun() -> update(Game) end),
+  true = contains(Output, "Moved to 1.\n").
+
+displays_the_second_move_test() ->
+  Game = game:new([1, 9]),
+  {ok, Output} = test_io:redirect("", fun() -> update(Game) end),
+  true = contains(Output, "Moved to 9.\n").

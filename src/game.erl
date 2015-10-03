@@ -1,5 +1,5 @@
 -module(game).
--export([new/0, new/1, make_move/2, board/1, possible_moves/1, status/1]).
+-export([new/0, new/1, make_move/2, board/1, moves/1, possible_moves/1, status/1]).
 
 -record(game, {spaces_to_move, board}).
 
@@ -23,6 +23,9 @@ make_move(Move, Game) ->
 
 board(Game) ->
   board:as_list(Game#game.board).
+
+moves(Game) ->
+  Game#game.spaces_to_move.
 
 possible_moves(Game) ->
   board:empty_spaces(Game#game.board).
