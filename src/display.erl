@@ -1,9 +1,9 @@
--module(cli).
+-module(display).
 
 -export([update/1]).
 
 update(Game) ->
-  display_last_move(game:moves(Game)),
+  display_last_move(game:previous_moves(Game)),
   display_board(game:board(Game)),
   display_status(game:status(Game)).
 
@@ -20,7 +20,7 @@ display_status({ongoing, ActivePlayer}) ->
 display_status({finished, draw}) ->
   io:format("It is a draw.~n");
 display_status({finished, Winner}) ->
-  io:format("~p has won!~n", [Winner]).
+  io:format("~p wins!~n", [Winner]).
 
 format(Board) ->
   Cells = format_cells(Board),
@@ -51,5 +51,7 @@ format_cells(Board) ->
 to_cell(BoardTuple) ->
   " " ++ to_string(BoardTuple) ++ " ".
 
-to_string({Space, empty}) -> integer_to_list(Space);
+to_string({Space, empty}) -> grey(integer_to_list(Space));
 to_string({_, Mark}) -> atom_to_list(Mark).
+
+grey(String) -> "\033[1;30m" ++ String ++ "\033[0m".

@@ -6,21 +6,16 @@ play(Game) ->
 
 
 best_move(Game) ->
-  AddScore = fun(Move) ->
-                 {score_move(Move, Game), Move}
-             end,
-  SelectBest = fun(Option, BestSoFar) ->
-                   {Score, _}     = Option,
-                   {BestScore, _} = BestSoFar,
-                   case Score > BestScore of
-                     true -> Option;
-                     _    -> BestSoFar
-                   end
-               end,
-  Options = lists:map(AddScore, game:possible_moves(Game)),
-  [First|Rest] = Options,
-  {_, Move} = lists:foldl(SelectBest, First, Rest),
-  Move.
+  case game:previous_moves(Game) of
+    [] -> 1;
+    _  ->
+      {BestMove, _} = list:max_key(2, possibilities(Game)),
+      BestMove
+  end.
+
+possibilities(Game) ->
+  AddScore = fun(Move) -> {Move, score_move(Move, Game)} end,
+  lists:map(AddScore, game:possible_moves(Game)).
 
 score_move(Move, Game) ->
   negamax_score(6, make_move(Move, Game)).

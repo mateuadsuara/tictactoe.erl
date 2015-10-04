@@ -1,5 +1,5 @@
 -module(game).
--export([new/0, new/1, make_move/2, board/1, moves/1, possible_moves/1, status/1]).
+-export([new/0, new/1, make_move/2, board/1, previous_moves/1, possible_moves/1, status/1]).
 
 -record(game, {spaces_to_move, board}).
 
@@ -24,7 +24,7 @@ make_move(Move, Game) ->
 board(Game) ->
   board:as_list(Game#game.board).
 
-moves(Game) ->
+previous_moves(Game) ->
   Game#game.spaces_to_move.
 
 possible_moves(Game) ->
@@ -32,8 +32,8 @@ possible_moves(Game) ->
 
 status(Game) ->
  case {is_finished(Game), next_player(Game), winner(Game)} of
-   {true, _, none} -> {finished, draw};
-   {true, _, Winner} -> {finished, Winner};
+   {true, _, none}        -> {finished, draw};
+   {true, _, Winner}      -> {finished, Winner};
    {false, NextPlayer, _} -> {ongoing, NextPlayer}
  end.
 

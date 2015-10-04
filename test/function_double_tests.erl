@@ -3,7 +3,6 @@
 
 -import(function_double, [new/2]).
 
-
 returns_the_specified_return_values_test() ->
   {Fun, _} = new(1, [ok1, ok2, ok3]),
   ok1 = Fun(arg1),

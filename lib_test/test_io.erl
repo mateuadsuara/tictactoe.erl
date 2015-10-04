@@ -1,5 +1,5 @@
 -module(test_io).
--export([spy/1, redirect/2]).
+-export([spy/1, redirect_io/2]).
 
 spy(DuringFunction) ->
   {_, Messages} = replace_group_leader_for(
@@ -7,8 +7,8 @@ spy(DuringFunction) ->
     DuringFunction),
   Messages.
 
-redirect(InputString, DuringFunction) ->
-  {FunctionResult, CapturedOutput} = replace_group_leader_for(
+redirect_io(InputString, DuringFunction) ->
+  replace_group_leader_for(
     fun(GroupLeader) -> redirect_io(GroupLeader, [], InputString) end,
     DuringFunction).
 
@@ -19,7 +19,7 @@ replace_group_leader_for(SurrogateFn, DuringFunction) ->
   erlang:group_leader(Surrogate, self()),
   FunctionResult = DuringFunction(),
   erlang:group_leader(Original, self()),
-  receive after 10 -> enough_to_flush_surrogate end,
+  receive after 1 -> enough_to_flush_surrogate end,
   Surrogate ! {get_result, self()},
   SurrogateResult = receive R -> R end,
   {FunctionResult, SurrogateResult}.
