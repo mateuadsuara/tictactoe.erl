@@ -44,8 +44,5 @@ no_display() ->
 
 display_spy() ->
   {Spy, GetArgumentCalls} = function_double:new(1, lists:duplicate(9, ok)),
-  GetArguments =
-    fun() ->
-        lists:flatten(GetArgumentCalls())
-    end,
+  GetArguments = fun() -> lists:flatten(GetArgumentCalls()) end,
   {Spy, GetArguments}.

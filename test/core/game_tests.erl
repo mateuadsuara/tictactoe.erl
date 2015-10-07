@@ -50,7 +50,7 @@ game_with_first_move_test() ->
   {ongoing, o}             = status(Game).
 
 game_with_two_moves_test() ->
-  Game = new([1, 3]),
+  Game                  = new([1, 3]),
   [x,     empty, o,
    empty, empty, empty,
    empty, empty, empty] = board(Game),
