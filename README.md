@@ -19,7 +19,7 @@ This is an implementation of the tic-tac-toe game (or Noughts and crosses, Xs an
 ## Dependencies
 
 ##### Execution
-* Erlang/OTP 17 Erts 6.4
+* Erlang/OTP 17 Erts 6.4 (it may run on other versions too, this is the one used during development).
 
 ##### Testing
 * EUnit
