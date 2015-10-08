@@ -1,11 +1,5 @@
 -module(test_io).
--export([spy/1, redirect_io/2]).
-
-spy(DuringFunction) ->
-  {_, Messages} = replace_group_leader_for(
-    fun(GroupLeader) -> spy_messages(GroupLeader, []) end,
-    DuringFunction),
-  Messages.
+-export([redirect_io/2]).
 
 redirect_io(InputString, DuringFunction) ->
   replace_group_leader_for(
@@ -19,67 +13,38 @@ replace_group_leader_for(SurrogateFn, DuringFunction) ->
   erlang:group_leader(Surrogate, self()),
   FunctionResult = DuringFunction(),
   erlang:group_leader(Original, self()),
-  receive after 1 -> enough_to_flush_surrogate end,
   Surrogate ! {get_result, self()},
   SurrogateResult = receive R -> R end,
   {FunctionResult, SurrogateResult}.
-
-spy_messages(GroupLeader, Messages) ->
-  Self = self(),
-  receive
-    {get_result, From} -> From ! Messages;
-    {record_message, Message} ->
-      spy_messages(
-        GroupLeader,
-        lists:append(Messages, [Message]));
-    {io_request, From, Ref, Op} ->
-      Request = {io_request, From, Ref, Op},
-      Self ! {record_message, Request},
-      ResponseSpyPid = spawn(fun ResponseSpy() ->
-            receive Response ->
-                Self ! {record_message, Response},
-                From ! Response,
-                ResponseSpy()
-            end
-      end),
-      RedirectedRequest = {io_request, ResponseSpyPid, Ref, Op},
-      GroupLeader ! RedirectedRequest,
-      spy_messages(GroupLeader, Messages);
-    Message ->
-      Self ! {record_message, Message},
-      GroupLeader ! Message,
-      spy_messages(GroupLeader, Messages)
-    end.
 
 redirect_io(GroupLeader, OutputString, InputString) ->
   receive
     {get_result, From} -> From ! OutputString;
     {io_request, From, Ref,
      {get_until, unicode, [], io_lib, fread, [Format]}} ->
-      case io_lib:fread(Format, InputString) of
-        {ok, Result, RemainingInputString} ->
-          From ! {io_reply, Ref, {ok, Result}},
-          redirect_io(GroupLeader, OutputString, RemainingInputString);
-        {error, What} ->
-          From ! {io_reply, Ref, {error, What}},
-          redirect_io(GroupLeader, OutputString, remove_line(InputString));
-        {more, _, _, _} ->
-          From ! {io_reply, Ref, eof},
-          redirect_io(GroupLeader, OutputString, "")
-      end;
+      {Response, RemainingInputString} = read(InputString, Format),
+      From ! {io_reply, Ref, Response},
+      redirect_io(GroupLeader, OutputString, RemainingInputString);
     {io_request, From, Ref,
      {put_chars, Encoding, Module, Func, Args}} ->
       Message = {io_request, From, Ref,
                  {put_chars, Encoding, Module, Func, Args}},
       GroupLeader ! Message,
-      Output = unicode:characters_to_list(
-        apply(Module, Func, Args),
-        Encoding),
-      ExtendedOutput = OutputString ++ Output,
+      ExtendedOutput = write(OutputString, Encoding, Module, Func, Args),
       redirect_io(GroupLeader, ExtendedOutput, InputString);
     UnknownMessage ->
       GroupLeader ! UnknownMessage,
       redirect_io(GroupLeader, OutputString, InputString)
+  end.
+
+read(InputString, Format) ->
+  case io_lib:fread(Format, InputString) of
+    {ok, Result, RemainingInputString} ->
+      {{ok, Result}, RemainingInputString};
+    {error, What} ->
+      {{error, What}, remove_line(InputString)};
+    {more, _, _, _} ->
+      {eof, ""}
   end.
 
 remove_line(String) ->
@@ -88,3 +53,9 @@ remove_line(String) ->
     1             -> remove_line(string:substr(String, 2));
     NextLineIndex -> string:substr(String, NextLineIndex)
   end.
+
+write(OutputString, Encoding, Module, Func, Args) ->
+  Output = unicode:characters_to_list(
+             apply(Module, Func, Args),
+             Encoding),
+  OutputString ++ Output.

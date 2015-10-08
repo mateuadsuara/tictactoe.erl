@@ -1,16 +1,6 @@
 -module(test_io_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-spies_the_io_messages_test() ->
-  [{io_request,_,Ref,
-    {put_chars,unicode,io_lib,format,["foo",[]]}},
-   {io_reply,Ref,ok}] =
-    test_io:spy(fun() -> ok = io:format("foo") end).
-
-spies_the_unknown_messages_test() ->
-  [message] =
-    test_io:spy(fun() -> erlang:group_leader() ! message end).
-
 returns_the_function_result_test() ->
   {result, _} = test_io:redirect_io("", fun() -> result end).
 
